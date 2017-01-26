@@ -10,7 +10,7 @@ class FeedAdmin(admin.ModelAdmin):
                        "last_polled_time"]
     fieldsets = (
         (None, {
-            "fields": (("xml_url", "group",),
+            "fields": (("xml_url",),
                        ("title", "link",),
                        ("description",),
                        ("published_time", "last_polled_time",),

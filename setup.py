@@ -23,7 +23,7 @@ setup(
     author_email="dev@praekelt.com",
     license="BSD",
     url="",
-    packages=['rssfeed'],
+    packages=find_packages(),
     dependency_links=[],
     install_requires=[
         "django"
