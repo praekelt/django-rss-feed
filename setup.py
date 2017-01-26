@@ -26,7 +26,8 @@ setup(
     packages=find_packages(),
     dependency_links=[],
     install_requires=[
-        "django"
+        "django==1.9.6",
+        "feedparser==5.2.1"
     ],
     classifiers=[
         "Programming Language :: Python",
