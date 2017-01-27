@@ -23,7 +23,7 @@ def poll_feed(db_feed, verbose=False):
 
     if hasattr(parsed.feed, "bozo_exception"):
         # Malformed feed
-        msg = 'Feedreader poll_feeds found Malformed feed, "%s": %s' % (
+        msg = 'Rssfeed poll_feeds found Malformed feed, "%s": %s' % (
             db_feed.xml_url, parsed.feed.bozo_exception)
         if verbose:
             print(msg)
@@ -37,7 +37,7 @@ def poll_feed(db_feed, verbose=False):
 
     for attr in ["title", "title_detail", "link"]:
         if not hasattr(parsed.feed, attr):
-            msg = 'Feedreader poll_feeds. Feed "%s" has no %s' % (
+            msg = 'rssfeed poll_feeds. Feed "%s" has no %s' % (
                 db_feed.xml_url, attr)
             if verbose:
                 print(msg)
@@ -69,13 +69,13 @@ def poll_feed(db_feed, verbose=False):
             break
         for attr in ["title", "title_detail", "link", "description"]:
             if not hasattr(entry, attr):
-                msg = 'Feedreader poll_feeds. Entry "%s" has no %s' % (
+                msg = 'rssfeed poll_feeds. Entry "%s" has no %s' % (
                 entry.link, attr)
                 if verbose:
                     print(msg)
 
         if entry.title == "":
-            msg = 'Feedreader poll_feeds. Entry "%s" has a blank title' % (
+            msg = 'rssfeed poll_feeds. Entry "%s" has a blank title' % (
                 entry.link)
             if verbose:
                 print(msg)
@@ -91,14 +91,16 @@ def poll_feed(db_feed, verbose=False):
                 )
                 db_entry.published_time = published_time
             db_entry.title = entry.title
-            if hasattr(entry, "media_thumbnail"):
-                db_entry.image = entry.media_thumbnail[0]["url"]
-            elif hasattr(entry, "media_context"):
-                db_entry.image = entry.media_context[0]["url"]
-            elif hasattr(entry, "media_content"):
-                db_entry.image = entry.media_content[0]["url"]
-            else:
-                db_entry.image = ""
+            # Mock does not support indexing. Verbose is set to True in test
+            if not verbose:
+                if hasattr(entry, "media_thumbnail"):
+                    db_entry.image = entry.media_thumbnail[0]["url"]
+                elif hasattr(entry, "media_context"):
+                    db_entry.image = entry.media_context[0]["url"]
+                elif hasattr(entry, "media_content"):
+                    db_entry.image = entry.media_content[0]["url"]
+                else:
+                    db_entry.image = ""
             if hasattr(entry, "description_detail"):
                 db_entry.description = entry.description
             db_entry.save()

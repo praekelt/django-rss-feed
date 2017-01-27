@@ -27,7 +27,9 @@ setup(
     dependency_links=[],
     install_requires=[
         "django==1.9.6",
-        "feedparser==5.2.1"
+        "feedparser==5.2.1",
+        "mock==1.3.0",
+        "pytz==2015.7",
     ],
     classifiers=[
         "Programming Language :: Python",

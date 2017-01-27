@@ -4,7 +4,7 @@
         <div class="feed_entry">
             <img src="{{ entry.image }}" height="200" width="300">
             <h3><a href="{{ entry.link }}">{{ entry.title|safe }}</a></h3>
-            <p class="feedreader_subtitle">
+            <p class="rssfeed_subtitle">
                 {% trans 'from' %}
                 <img src="{{ entry.feed.image }}">
                 <a href="{{ entry.feed.link }}" title="{{ entry.feed.description|safe }}">
