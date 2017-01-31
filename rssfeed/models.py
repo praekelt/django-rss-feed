@@ -25,7 +25,7 @@ class Feed(models.Model):
         except Feed.DoesNotExist:
             super(Feed, self).save(*args, **kwargs)
             from rssfeed.utils import poll_feed
-            poll_feed(self, True)
+            poll_feed(self)
 
 
 class Entry(models.Model):

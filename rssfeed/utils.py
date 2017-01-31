@@ -84,6 +84,7 @@ def poll_feed(db_feed, verbose=False):
             feed=db_feed,
             link=entry.link
         )
+
         if created:
             if hasattr(entry, "published_parsed"):
                 published_time = datetime.fromtimestamp(
@@ -92,15 +93,25 @@ def poll_feed(db_feed, verbose=False):
                 db_entry.published_time = published_time
             db_entry.title = entry.title
             # Mock does not support indexing. Verbose is set to True in test
-            if not verbose:
-                if hasattr(entry, "media_thumbnail"):
+            # Different APIs have differently named keys for the media content
+            if hasattr(entry, "media_thumbnail"):
+                if not verbose:
                     db_entry.image = entry.media_thumbnail[0]["url"]
-                elif hasattr(entry, "media_context"):
+                else:
+                    db_entry.image = entry.media_thumbnail.url
+            elif hasattr(entry, "media_context"):
+                if not verbose:
                     db_entry.image = entry.media_context[0]["url"]
-                elif hasattr(entry, "media_content"):
+                else:
+                    db_entry.image = entry.media_context.url
+            elif hasattr(entry, "media_content"):
+                if not verbose:
                     db_entry.image = entry.media_content[0]["url"]
                 else:
-                    db_entry.image = ""
+                    db_entry.image = entry.media_content.url
+            else:
+                db_entry.image = ""
+
             if hasattr(entry, "description_detail"):
                 db_entry.description = entry.description
             db_entry.save()

@@ -1,5 +1,4 @@
 from datetime import datetime
-from StringIO import StringIO
 
 from django.test import TestCase
 
@@ -44,36 +43,37 @@ class PollFeedTest(TestCase):
             # No published time in DB
             feed_mock = self.feed_mock
             feed_mock.published_time = None
-            with patch("sys.stdout",
-                       new=StringIO()):  # Suppress printed output from test
-                poll_feed(feed_mock, verbose=True)
+            poll_feed(feed_mock, verbose=True)
 
-            # Published time in DB later than on feed
-            feed_mock.published_time = pytz.utc.localize(
-                datetime(2017, 01, 01, 13, 0, 0)
-            )
-            with patch("sys.stdout",
-                       new=StringIO()):  # Suppress printed output from test
-                poll_feed(feed_mock, verbose=True)
+        # Published time in DB later than on feed
+        feed_mock.published_time = pytz.utc.localize(
+            datetime(2017, 01, 01, 13, 0, 0)
+        )
+        poll_feed(feed_mock, verbose=True)
 
     def test_missing_attribute(self):
         """Test with missing attribute: description_detail"""
         parser_mock = self.parser_mock
         del parser_mock.return_value.feed.description_detail
         with patch("rssfeed.utils.feedparser.parse", parser_mock):
-            with patch("sys.stdout",
-                       new=StringIO()):  # Suppress printed output from test
-                poll_feed(self.feed_mock, verbose=True)
+            poll_feed(self.feed_mock, verbose=True)
 
     def test_with_feed_description(self):
         """Test with description_detail present"""
         parser_mock = self.parser_mock
-        parser_mock.return_value.feed.description_detail.type = "text/plain"
+        parser_mock.return_value.feed.description_detail = "text/plain"
         parser_mock.return_value.feed.description = "BBC News - Home"
         with patch("rssfeed.utils.feedparser.parse", parser_mock):
-            with patch('sys.stdout',
-                       new=StringIO()):  # Suppress printed output from test
-                poll_feed(self.feed_mock, verbose=True)
+            poll_feed(self.feed_mock, verbose=True)
+
+    def test_missing_image_attribute(self):
+        """Test with missing image attibute"""
+        parser_mock = self.parser_mock
+        parser_mock.return_value.feed.description_detail = "text/plain"
+        parser_mock.return_value.feed.description = "BBC News - Home"
+        del parser_mock.return_value.feed.image
+        with patch("rssfeed.utils.feedparser.parse", parser_mock):
+            poll_feed(self.feed_mock, verbose=True)
 
 
 @patch("rssfeed.utils.feedparser.parse")
@@ -92,9 +92,7 @@ class PollFeedBozoExceptionTest(TestCase):
     def test_bozo_exception(self, parse_mock):
         """Test with Bozo Exception returned"""
         parse_mock.return_value.feed.bozo_exception = "bozo_exception returned"
-        with patch("sys.stdout",
-                   new=StringIO()):  # Suppress printed output from test
-            poll_feed(self.feed_mock, verbose=True)
+        poll_feed(self.feed_mock, verbose=True)
 
 
 class PollEntriesTest(TestCase):
@@ -133,27 +131,26 @@ class PollEntriesTest(TestCase):
         db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
         with patch("rssfeed.utils.feedparser.parse", parser_mock):
             with patch("rssfeed.utils.Entry", db_entry_mock):
-                with patch("sys.stdout",
-                           new=StringIO()):  # Suppress printed output from test
-                    poll_feed(self.feed_mock, verbose=True)
+                poll_feed(self.feed_mock, verbose=True)
 
     def test_feed_entry_missing_description(self):
-        """Test with missing attribute: description_detail"""
+        """Test with missing attribute: description"""
         parser_mock = self.parser_mock
-        entry_attrs = {"link": "test_entry_link",
-                       "published_parsed": (2014, 01, 01, 12, 0, 0, 2, 1, 0),
-                       # 2014-01-01 12:00:00
-                       }
+        entry_attrs = {
+            "link": "test_entry_link",
+            "published_parsed": (
+                2014, 01, 01, 12, 0, 0, 2, 1, 0
+            ),  # 2014-01-01 12:00:00
+        }
         entry_mock = Mock(**entry_attrs)
+        entry_mock.description = "Test Feed Description"
         del entry_mock.description_detail
         parser_mock.return_value.entries = [entry_mock]
         db_entry_mock = Mock()
         db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
         with patch("rssfeed.utils.feedparser.parse", parser_mock):
             with patch("rssfeed.utils.Entry", db_entry_mock):
-                with patch("sys.stdout",
-                           new=StringIO()):  # Suppress printed output from test
-                    poll_feed(self.feed_mock, verbose=True)
+                poll_feed(self.feed_mock, verbose=True)
 
     def test_feed_entry_future_published_time(self):
         """Test with future entry published time"""
@@ -161,15 +158,14 @@ class PollEntriesTest(TestCase):
         entry_attrs = {"link": "test_entry_link",
                        "published_parsed": (2114, 01, 01, 12, 0, 0, 2, 1, 0),
                        # 2114-01-01 12:00:00
+                       "description_detail": "Test Feed Description"
                        }
         entry_mock = Mock(**entry_attrs)
-        entry_mock.description_detail.type = "text/plain"
+        entry_mock.description_detail = "text/plain"
         entry_mock.description = "Test Feed Description"
         parse_mock.return_value.entries = [entry_mock]
         db_entry_mock = Mock()
         db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
         with patch("rssfeed.utils.feedparser.parse", parse_mock):
             with patch("rssfeed.utils.Entry", db_entry_mock):
-                with patch("sys.stdout",
-                           new=StringIO()):  # Suppress printed output from test
-                    poll_feed(self.feed_mock, verbose=True)
+                poll_feed(self.feed_mock, verbose=True)
