@@ -33,8 +33,9 @@ $(TOX):
 	$(PIP) install tox
 
 coverage: $(COVERAGE)
-	$(COVERAGE) run --source=$(PROJECT) manage.py test
+	$(COVERAGE) run --source=$(PROJECT) manage.py test --settings=rssfeed.tests.settings.19
 	$(COVERAGE) report
+	$(COVERAGE) html
 
 $(COVERAGE):
 	$(PIP) install coverage
