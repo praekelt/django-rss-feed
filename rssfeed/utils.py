@@ -72,13 +72,13 @@ def poll_feed(db_feed, verbose=False):
                     msg = 'rssfeed poll_feeds. Entry "%s" has no %s' % (
                         entry.link, attr)
                     print(msg)
-
-        if entry.title == "":
-            if verbose:
-                msg = 'rssfeed poll_feeds. Entry "%s" has a blank title' % (
-                    entry.link)
-                print(msg)
-            continue
+        if hasattr(entry, "title"):
+            if entry.title == "":
+                if verbose:
+                    msg = 'rssfeed poll_feeds. Entry "%s" has a blank title' % (
+                        entry.link)
+                    print(msg)
+                continue
         db_entry, created = Entry.objects.get_or_create(
             feed=db_feed,
             link=entry.link
@@ -90,24 +90,16 @@ def poll_feed(db_feed, verbose=False):
                     mktime(entry.published_parsed)
                 )
                 db_entry.published_time = published_time
-            db_entry.title = entry.title
+            if hasattr(entry, "title"):
+                db_entry.title = entry.title
             # Mock does not support indexing. Verbose is set to True in test
             # Different APIs have differently named keys for the media content
             if hasattr(entry, "media_thumbnail"):
-                if not verbose:
-                    db_entry.image = entry.media_thumbnail[0]["url"]
-                else:
-                    db_entry.image = entry.media_thumbnail.url
+                db_entry.image = entry.media_thumbnail[0]["url"]
             elif hasattr(entry, "media_context"):
-                if not verbose:
-                    db_entry.image = entry.media_context[0]["url"]
-                else:
-                    db_entry.image = entry.media_context.url
+                db_entry.image = entry.media_context[0]["url"]
             elif hasattr(entry, "media_content"):
-                if not verbose:
-                    db_entry.image = entry.media_content[0]["url"]
-                else:
-                    db_entry.image = entry.media_content.url
+                db_entry.image = entry.media_content[0]["url"]
             else:
                 db_entry.image = ""
 

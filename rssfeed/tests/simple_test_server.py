@@ -34,7 +34,15 @@ TEST_RSS = """<?xml version="1.0" encoding="UTF-8"?>
             <link>http://www.bbc.co.uk/news/business-38755242</link>
             <guid isPermaLink="true">http://www.bbc.co.uk/news/business-38755242</guid>
             <pubDate>Thu, 26 Jan 2017 11:00:37 GMT</pubDate>
-            <media:thumbnail width="976" height="549" url="http://c.files.bbci.co.uk/17567/production/_93819559_ipdp87vv.jpg"/>
+            <media:content width="976" height="549" url="http://c.files.bbci.co.uk/17567/production/_93819559_ipdp87vv.jpg"/>
+        </item>
+        <item>
+            <title><![CDATA[UK economy grows by 0.6% in fourth quarter]]></title>
+            <description><![CDATA[Strong consumer spending helped the economy to grow faster than expected at the end of last year.]]></description>
+            <link>http://www.bbc.co.uk/news/business-38755242</link>
+            <guid isPermaLink="true">http://www.bbc.co.uk/news/business-38755242</guid>
+            <pubDate>Thu, 26 Jan 2017 11:00:37 GMT</pubDate>
+            <media:context width="976" height="549" url="http://c.files.bbci.co.uk/17567/production/_93819559_ipdp87vv.jpg"/>
         </item>
     </channel>
 </rss>"""

@@ -119,9 +119,14 @@ class PollEntriesTest(TestCase):
         parser_mock = self.parser_mock
         entry_attrs = {
             "link": "test_entry_link",
-            "published_parsed": (
-                2014, 1, 1, 12, 0, 0, 2, 1, 0
-            ),  # 2014-01-01 12:00:00
+            "published_parsed": (2114, 1, 1, 12, 0, 0, 2, 1, 0),
+            "description_detail": "Test Feed Description",
+            "media_thumbnail": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ]
         }
         entry_mock = Mock(**entry_attrs)
         entry_mock.title = ""
@@ -137,9 +142,14 @@ class PollEntriesTest(TestCase):
         parser_mock = self.parser_mock
         entry_attrs = {
             "link": "test_entry_link",
-            "published_parsed": (
-                2014, 1, 1, 12, 0, 0, 2, 1, 0
-            ),  # 2014-01-01 12:00:00
+            "published_parsed": (2114, 1, 1, 12, 0, 0, 2, 1, 0),
+            "description_detail": "Test Feed Description",
+            "media_thumbnail": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ]
         }
         entry_mock = Mock(**entry_attrs)
         entry_mock.description = "Test Feed Description"
@@ -154,12 +164,173 @@ class PollEntriesTest(TestCase):
     def test_feed_entry_future_published_time(self):
         # Test with future entry published time
         parse_mock = self.parser_mock
-        entry_attrs = {"link": "test_entry_link",
-                       "published_parsed": (2114, 1, 1, 12, 0, 0, 2, 1, 0),
-                       # 2114-01-01 12:00:00
-                       "description_detail": "Test Feed Description"
-                       }
+        entry_attrs = {
+            "link": "test_entry_link",
+            "published_parsed": (2114, 1, 1, 12, 0, 0, 2, 1, 0),
+            "description_detail": "Test Feed Description",
+            "media_thumbnail": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ]
+        }
         entry_mock = Mock(**entry_attrs)
+        entry_mock.description_detail = "text/plain"
+        entry_mock.description = "Test Feed Description"
+        parse_mock.return_value.entries = [entry_mock]
+        db_entry_mock = Mock()
+        db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
+        with patch("rssfeed.utils.feedparser.parse", parse_mock):
+            with patch("rssfeed.utils.Entry", db_entry_mock):
+                poll_feed(self.feed_mock, verbose=True)
+
+    def test_feed_entry_media_content(self):
+        # Test a feed entry with the media title as content
+        parse_mock = self.parser_mock
+        entry_attrs = {
+            "link": "test_entry_link",
+            "published_parsed": (2114, 1, 1, 12, 0, 0, 2, 1, 0),
+            "description_detail": "Test Feed Description",
+            "media_context": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ],
+            "media_thumbnail": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ],
+            "media_content": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ]
+        }
+        entry_mock = Mock(**entry_attrs)
+        entry_mock.description_detail = "text/plain"
+        entry_mock.description = "Test Feed Description"
+        parse_mock.return_value.entries = [entry_mock]
+        db_entry_mock = Mock()
+        db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
+        with patch("rssfeed.utils.feedparser.parse", parse_mock):
+            with patch("rssfeed.utils.Entry", db_entry_mock):
+                poll_feed(self.feed_mock, verbose=True)
+
+    def test_feed_entry_empty_media(self):
+        # Test a feed entry with the media title as content
+        parse_mock = self.parser_mock
+        entry_attrs = {
+            "link": "test_entry_link",
+            "published_parsed": (2114, 1, 1, 12, 0, 0, 2, 1, 0),
+            "description_detail": "Test Feed Description",
+            "media_context": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ],
+            "media_thumbnail": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ],
+            "media_content": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ]
+        }
+
+        entry_mock = Mock(**entry_attrs)
+        del entry_mock.media_context
+        del entry_mock.media_thumbnail
+        del entry_mock.media_content
+        entry_mock.description_detail = "text/plain"
+        entry_mock.description = "Test Feed Description"
+        parse_mock.return_value.entries = [entry_mock]
+        db_entry_mock = Mock()
+        db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
+        with patch("rssfeed.utils.feedparser.parse", parse_mock):
+            with patch("rssfeed.utils.Entry", db_entry_mock):
+                poll_feed(self.feed_mock, verbose=True)
+
+    def test_feed_entry_media_context(self):
+        # Test a feed entry with the media title as content
+        parse_mock = self.parser_mock
+        entry_attrs = {
+            "link": "test_entry_link",
+            "published_parsed": (2114, 1, 1, 12, 0, 0, 2, 1, 0),
+            "description_detail": "Test Feed Description",
+            "media_context": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ],
+            "media_thumbnail": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ],
+            "media_content": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ]
+        }
+
+        entry_mock = Mock(**entry_attrs)
+        del entry_mock.media_thumbnail
+        del entry_mock.media_content
+        entry_mock.description_detail = "text/plain"
+        entry_mock.description = "Test Feed Description"
+        parse_mock.return_value.entries = [entry_mock]
+        db_entry_mock = Mock()
+        db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
+        with patch("rssfeed.utils.feedparser.parse", parse_mock):
+            with patch("rssfeed.utils.Entry", db_entry_mock):
+                poll_feed(self.feed_mock, verbose=True)
+
+    def test_feed_entry_published_parsed_missing(self):
+        # Test a feed entry with the media title as content
+        parse_mock = self.parser_mock
+        entry_attrs = {
+            "title": "This is a test title",
+            "link": "test_entry_link",
+            "published_parsed": (2114, 1, 1, 12, 0, 0, 2, 1, 0),
+            "description_detail": "Test Feed Description",
+            "media_context": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ],
+            "media_thumbnail": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ],
+            "media_content": [
+                {
+                    "url": "http://c.files.bbci.co.uk/17567/production/_938195"
+                           "59_ipdp87vv.jpg"
+                }
+            ]
+        }
+
+        entry_mock = Mock(**entry_attrs)
+        del entry_mock.published_parsed
+        del entry_mock.title
         entry_mock.description_detail = "text/plain"
         entry_mock.description = "Test Feed Description"
         parse_mock.return_value.entries = [entry_mock]

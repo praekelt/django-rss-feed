@@ -2,8 +2,12 @@ DEBUG = True
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "test110.db"
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "rssfeed",
+        "USER": "postgres",
+        "PASSWORD": "",
+        "HOST": "127.0.0.1",
+        "PORT": "5432"
     }
 }
 
