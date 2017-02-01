@@ -1,10 +1,8 @@
 import os
 import glob
-from os.path import expanduser
-
 
 BASE_DIR = os.path.join(
-    glob.glob(os.environ["VIRTUAL_ENV"] +  "/lib/*/site-packages")[0],
+    glob.glob(os.environ["VIRTUAL_ENV"] + "/lib/*/site-packages")[0],
     "spliceworks"
 )
 

@@ -8,7 +8,7 @@ register = template.Library()
 @register.inclusion_tag(
     "rssfeed/inclusion_tags/entry_list.html", takes_context=True
 )
-def render_rssfeed(context):
+def render_rssfeed(context, count=10):
     entries = Entry.objects.all()
-    context["entry_list"] = entries[:10]
+    context["entry_list"] = entries[:count]
     return context

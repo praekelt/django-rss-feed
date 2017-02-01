@@ -1,6 +1,6 @@
-from SimpleHTTPServer import SimpleHTTPRequestHandler
 import SocketServer
 import threading
+from SimpleHTTPServer import SimpleHTTPRequestHandler
 
 PORT = 8008
 TEST_RSS = """<?xml version="1.0" encoding="UTF-8"?>
@@ -41,14 +41,14 @@ TEST_RSS = """<?xml version="1.0" encoding="UTF-8"?>
 
 
 class Handler(SimpleHTTPRequestHandler):
-    """Local server to return the RSS Feed."""
+    # Local server to return the RSS Feed.
     def set_header(self):
         self.send_response(200)
         self.send_header("Content-type", "application/rss+xml")
         self.end_headers()
 
     def do_GET(self):
-        """Construct the response, set headers to be of type RSS."""
+        # Construct the response, set headers to be of type RSS.
         self.wfile.write(TEST_RSS)
         return
 
@@ -61,14 +61,14 @@ test_server = TestServer(('', PORT), Handler)
 
 
 def server_setup():
-    """Start the server that returns the RSS feed."""
+    # Start the server that returns the RSS feed.
     thread = threading.Thread(target=test_server.serve_forever)
     thread.daemon = True
     thread.start()
 
 
 def server_teardown():
-    """Stop server which returned test rss data."""
+    # Stop server which returned test rss data.
     test_server.shutdown()
 
 

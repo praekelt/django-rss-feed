@@ -1,7 +1,9 @@
 from django.test import TestCase
 
 from rssfeed.models import Entry, Feed
-from .simple_test_server import (PORT, server_setup, server_teardown)
+from rssfeed.tests.simple_test_server import (
+    PORT, server_setup, server_teardown
+)
 
 
 def setUpModule():
@@ -13,7 +15,7 @@ def tearDownModule():
 
 
 class FeedTest(TestCase):
-    """Create and access Feed."""
+    # Create and access Feed.
 
     def setUp(self):
         self.feed = Feed.objects.create(
@@ -23,7 +25,7 @@ class FeedTest(TestCase):
         self.feed.save()
 
     def test_feed_unicode(self):
-        """Retrieve Feed object's unicode string."""
+        # Retrieve Feed object's unicode string.
         feed_unicode = self.feed.__unicode__()
         self.assertEqual(
             feed_unicode,
@@ -34,7 +36,7 @@ class FeedTest(TestCase):
 
 
 class EntryTest(TestCase):
-    """Create and access Entry."""
+    # Create and access Entry.
 
     def setUp(self):
         self.feed = Feed.objects.create(
@@ -47,7 +49,7 @@ class EntryTest(TestCase):
         )
 
     def test_entry_unicode(self):
-        """Retrieve Entry object's unicode string."""
+        # Retrieve Entry object's unicode string.
         entry_unicode = self.entry.__unicode__()
         self.assertEqual(
             entry_unicode,

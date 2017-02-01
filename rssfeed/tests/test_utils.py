@@ -1,12 +1,11 @@
 from datetime import datetime
 
+import pytz
 from django.test import TestCase
+from mock import Mock, patch
 
 from rssfeed.models import Feed
 from rssfeed.utils import poll_feed
-
-from mock import Mock, patch
-import pytz
 
 
 class PollFeedTest(TestCase):
@@ -15,20 +14,20 @@ class PollFeedTest(TestCase):
     """
 
     def setUp(self):
-        """Create a mock object for feedparser"""
+        # Create a mock object for feedparser
         parser_mock = Mock()
         """Ensure that the mocked feed that the feedparser returns is not
         poorly formatted. (bozo_exception)"""
         del parser_mock.return_value.feed.bozo_exception
         parser_mock.return_value.feed.published_parsed = (
-            2017, 01, 01,
+            2017, 1, 1,
             12, 0, 0,
             2, 1, 0
         )  # 2017-01-01 12:00:00
         parser_mock.return_value.entries = []
         self.parser_mock = parser_mock
 
-        """Create a Feed mock object"""
+        # Create a Feed mock object
         feed_mock = Mock(spec=Feed)
         feed_mock.xml_url = "test-feed-url"
         feed_mock.published_time = None
@@ -38,7 +37,7 @@ class PollFeedTest(TestCase):
         self.feed_mock = feed_mock
 
     def test_published_time(self):
-        """Test Published Time variations"""
+        # Test Published Time variations
         with patch("rssfeed.utils.feedparser.parse", self.parser_mock):
             # No published time in DB
             feed_mock = self.feed_mock
@@ -47,19 +46,19 @@ class PollFeedTest(TestCase):
 
         # Published time in DB later than on feed
         feed_mock.published_time = pytz.utc.localize(
-            datetime(2017, 01, 01, 13, 0, 0)
+            datetime(2017, 1, 1, 13, 0, 0)
         )
         poll_feed(feed_mock, verbose=True)
 
     def test_missing_attribute(self):
-        """Test with missing attribute: description_detail"""
+        # Test with missing attribute: description_detail
         parser_mock = self.parser_mock
         del parser_mock.return_value.feed.description_detail
         with patch("rssfeed.utils.feedparser.parse", parser_mock):
             poll_feed(self.feed_mock, verbose=True)
 
     def test_with_feed_description(self):
-        """Test with description_detail present"""
+        # Test with description_detail present
         parser_mock = self.parser_mock
         parser_mock.return_value.feed.description_detail = "text/plain"
         parser_mock.return_value.feed.description = "BBC News - Home"
@@ -67,7 +66,7 @@ class PollFeedTest(TestCase):
             poll_feed(self.feed_mock, verbose=True)
 
     def test_missing_image_attribute(self):
-        """Test with missing image attibute"""
+        # Test with missing image attibute
         parser_mock = self.parser_mock
         parser_mock.return_value.feed.description_detail = "text/plain"
         parser_mock.return_value.feed.description = "BBC News - Home"
@@ -90,23 +89,23 @@ class PollFeedBozoExceptionTest(TestCase):
         self.feed_mock = feed_mock
 
     def test_bozo_exception(self, parse_mock):
-        """Test with Bozo Exception returned"""
+        # Test with Bozo Exception returned
         parse_mock.return_value.feed.bozo_exception = "bozo_exception returned"
         poll_feed(self.feed_mock, verbose=True)
 
 
 class PollEntriesTest(TestCase):
     def setUp(self):
-        """Create feedparser.parse_mock object"""
+        # Create feedparser.parse_mock object
         parser_mock = Mock()
         del parser_mock.return_value.feed.bozo_exception
         parser_mock.return_value.feed.published_parsed = (
-            2017, 01, 01,
+            2017, 1, 1,
             12, 0, 0,
             2, 1, 0)  # 2017-01-01 12:00:00
         self.parser_mock = parser_mock
 
-        """Create Feed mock object"""
+        # Create Feed mock object
         feed_mock = Mock(spec=Feed)
         feed_mock.xml_url = "test-feed-url"
         feed_mock.published_time = None
@@ -116,12 +115,12 @@ class PollEntriesTest(TestCase):
         self.feed_mock = feed_mock
 
     def test_feed_entry_blank_title(self):
-        """Test with missing attribute: description_detail"""
+        # Test with missing attribute: description_detail
         parser_mock = self.parser_mock
         entry_attrs = {
             "link": "test_entry_link",
             "published_parsed": (
-                2014, 01, 01, 12, 0, 0, 2, 1, 0
+                2014, 1, 1, 12, 0, 0, 2, 1, 0
             ),  # 2014-01-01 12:00:00
         }
         entry_mock = Mock(**entry_attrs)
@@ -134,12 +133,12 @@ class PollEntriesTest(TestCase):
                 poll_feed(self.feed_mock, verbose=True)
 
     def test_feed_entry_missing_description(self):
-        """Test with missing attribute: description"""
+        # Test with missing attribute: description
         parser_mock = self.parser_mock
         entry_attrs = {
             "link": "test_entry_link",
             "published_parsed": (
-                2014, 01, 01, 12, 0, 0, 2, 1, 0
+                2014, 1, 1, 12, 0, 0, 2, 1, 0
             ),  # 2014-01-01 12:00:00
         }
         entry_mock = Mock(**entry_attrs)
@@ -153,10 +152,10 @@ class PollEntriesTest(TestCase):
                 poll_feed(self.feed_mock, verbose=True)
 
     def test_feed_entry_future_published_time(self):
-        """Test with future entry published time"""
+        # Test with future entry published time
         parse_mock = self.parser_mock
         entry_attrs = {"link": "test_entry_link",
-                       "published_parsed": (2114, 01, 01, 12, 0, 0, 2, 1, 0),
+                       "published_parsed": (2114, 1, 1, 12, 0, 0, 2, 1, 0),
                        # 2114-01-01 12:00:00
                        "description_detail": "Test Feed Description"
                        }

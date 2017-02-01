@@ -7,7 +7,7 @@ from rssfeed.models import Entry, Feed
 from rssfeed.tests.simple_test_server import server_setup, server_teardown, \
     PORT
 
-"""Create test server that mocks the RSS feed api"""
+# Create test server that mocks the RSS feed api
 
 
 def setUpModule():
@@ -22,14 +22,14 @@ class RssFeedTagTest(TestCase):
     TEMPLATE = Template("{% load rssfeed_tags %} {% render_rssfeed %}")
 
     def setUp(self):
-        """Create a test feed object"""
+        # Create a test feed object
         self.feed = Feed.objects.create(
             xml_url="http://localhost:%s/test/feed" % PORT
         )
         self.feed.title = "Test Feed"
         self.feed.save()
 
-        """Create a test Entry object"""
+        # Create a test Entry object
         self.entry = Entry.objects.create(
             feed=self.feed,
             title="Test Entry",

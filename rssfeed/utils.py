@@ -1,13 +1,12 @@
 from datetime import datetime
-
 from time import mktime
 
+import feedparser
 from django.utils import timezone
 
-import feedparser
-
-
 from rssfeed.models import Entry
+
+MAX = 20
 
 
 def poll_feed(db_feed, verbose=False):
@@ -22,10 +21,10 @@ def poll_feed(db_feed, verbose=False):
     parsed = feedparser.parse(db_feed.xml_url)
 
     if hasattr(parsed.feed, "bozo_exception"):
-        # Malformed feed
-        msg = 'Rssfeed poll_feeds found Malformed feed, "%s": %s' % (
-            db_feed.xml_url, parsed.feed.bozo_exception)
         if verbose:
+            # Malformed feed
+            msg = 'Rssfeed poll_feeds found Malformed feed, "%s": %s' % (
+                db_feed.xml_url, parsed.feed.bozo_exception)
             print(msg)
         return
 
@@ -37,13 +36,13 @@ def poll_feed(db_feed, verbose=False):
 
     for attr in ["title", "title_detail", "link"]:
         if not hasattr(parsed.feed, attr):
-            msg = 'rssfeed poll_feeds. Feed "%s" has no %s' % (
-                db_feed.xml_url, attr)
             if verbose:
+                msg = 'rssfeed poll_feeds. Feed "%s" has no %s' % (
+                    db_feed.xml_url, attr)
                 print(msg)
             return
 
-    """Get the title of the RSS feed"""
+    # Get the title of the RSS feed
     db_feed.title = parsed.feed.title
 
     if hasattr(parsed.feed, "description_detail") and hasattr(parsed.feed,
@@ -65,19 +64,19 @@ def poll_feed(db_feed, verbose=False):
             len(parsed.entries), db_feed.title)
               )
     for i, entry in enumerate(parsed.entries):
-        if i >= 20:
+        if i >= MAX:
             break
         for attr in ["title", "title_detail", "link", "description"]:
             if not hasattr(entry, attr):
-                msg = 'rssfeed poll_feeds. Entry "%s" has no %s' % (
-                entry.link, attr)
                 if verbose:
+                    msg = 'rssfeed poll_feeds. Entry "%s" has no %s' % (
+                        entry.link, attr)
                     print(msg)
 
         if entry.title == "":
-            msg = 'rssfeed poll_feeds. Entry "%s" has a blank title' % (
-                entry.link)
             if verbose:
+                msg = 'rssfeed poll_feeds. Entry "%s" has a blank title' % (
+                    entry.link)
                 print(msg)
             continue
         db_entry, created = Entry.objects.get_or_create(

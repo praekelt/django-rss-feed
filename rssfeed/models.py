@@ -1,5 +1,7 @@
 from django.db import models
 
+from rssfeed.utils import poll_feed
+
 
 class Feed(models.Model):
     title = models.CharField(max_length=2000, blank=True, null=True)
@@ -24,7 +26,6 @@ class Feed(models.Model):
             super(Feed, self).save(*args, **kwargs)
         except Feed.DoesNotExist:
             super(Feed, self).save(*args, **kwargs)
-            from rssfeed.utils import poll_feed
             poll_feed(self)
 
 
