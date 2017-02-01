@@ -100,9 +100,13 @@ def poll_feed(db_feed, verbose=False):
                 db_entry.image = entry.media_context[0]["url"]
             elif hasattr(entry, "media_content"):
                 db_entry.image = entry.media_content[0]["url"]
+            elif hasattr(entry, "links"):
+                if entry.links[0]["href"]:
+                    db_entry.image = entry.links[0]["href"]
             else:
                 db_entry.image = ""
 
             if hasattr(entry, "description_detail"):
                 db_entry.description = entry.description
+
             db_entry.save()
