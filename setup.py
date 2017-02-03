@@ -18,18 +18,22 @@ setup(
     name="django-rss-feed",
     version="0.1",
     description="App that aggregates rss feeds",
-    long_description = get_long_description(),
+    long_description=get_long_description(),
     author="Praekelt Consulting",
     author_email="dev@praekelt.com",
     license="BSD",
-    url="",
+    url="https://github.com/praekelt/django-rss-feed/",
     packages=find_packages(),
     dependency_links=[],
     install_requires=[
-        "django==1.9.6",
-        "feedparser==5.2.1",
-        "mock==1.3.0",
-        "pytz==2015.7",
+        "django",
+        "feedparser",
+        "django-photologue"
+    ],
+    tests_require=[
+        "tox",
+        "mock",
+        "pytz",
     ],
     classifiers=[
         "Programming Language :: Python",

@@ -18,27 +18,27 @@ def poll_feed(db_feed, verbose=False):
 
     """
 
-    parsed = feedparser.parse(db_feed.xml_url)
+    parsed = feedparser.parse(db_feed.url)
 
     if hasattr(parsed.feed, "bozo_exception"):
         if verbose:
             # Malformed feed
             msg = 'Rssfeed poll_feeds found Malformed feed, "%s": %s' % (
-                db_feed.xml_url, parsed.feed.bozo_exception)
+                db_feed.url, parsed.feed.bozo_exception)
             print(msg)
         return
 
     if hasattr(parsed.feed, "published_parsed"):
-        published_time = datetime.fromtimestamp(
+        published = datetime.fromtimestamp(
             mktime(parsed.feed.published_parsed)
         )
-        db_feed.published_time = published_time
+        db_feed.published = published
 
     for attr in ["title", "title_detail", "link"]:
         if not hasattr(parsed.feed, attr):
             if verbose:
                 msg = 'rssfeed poll_feeds. Feed "%s" has no %s' % (
-                    db_feed.xml_url, attr)
+                    db_feed.url, attr)
                 print(msg)
             return
 
@@ -50,7 +50,7 @@ def poll_feed(db_feed, verbose=False):
         db_feed.description = parsed.feed.description
     else:
         db_feed.description = ""
-    db_feed.last_polled_time = timezone.now()
+    db_feed.last_polled = timezone.now()
 
     if hasattr(parsed.feed, "image"):
         db_feed.image = parsed.feed.image.href
@@ -86,10 +86,10 @@ def poll_feed(db_feed, verbose=False):
 
         if created:
             if hasattr(entry, "published_parsed"):
-                published_time = datetime.fromtimestamp(
+                published = datetime.fromtimestamp(
                     mktime(entry.published_parsed)
                 )
-                db_entry.published_time = published_time
+                db_entry.published = published
             if hasattr(entry, "title"):
                 db_entry.title = entry.title
             # Mock does not support indexing. Verbose is set to True in test

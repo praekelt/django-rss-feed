@@ -56,7 +56,7 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        # Construct the response, set headers to be of type RSS.
+        # Construct the response.
         self.wfile.write(TEST_RSS)
         return
 

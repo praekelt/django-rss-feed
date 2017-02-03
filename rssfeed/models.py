@@ -1,26 +1,32 @@
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 
 class Feed(models.Model):
-    title = models.CharField(max_length=2000, blank=True, null=True)
-    xml_url = models.CharField(max_length=255, unique=True)
+    title = models.CharField(max_length=255, blank=True, null=True)
+    url = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True, null=True)
-    link = models.CharField(max_length=2000, blank=True, null=True)
-    published_time = models.DateTimeField(blank=True, null=True)
-    last_polled_time = models.DateTimeField(blank=True, null=True)
-    image = models.ImageField(max_length=2000, null=True)
+    link = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        db_index=True
+    )
+    published = models.DateTimeField(blank=True, null=True)
+    last_polled = models.DateTimeField(blank=True, null=True)
+    image = models.ImageField(max_length=255, null=True)
 
     class Meta:
-        verbose_name = "Feed"
-        verbose_name_plural = "Feeds"
+        verbose_name = _("Feed")
+        verbose_name_plural = _("Feeds")
 
     def __unicode__(self):
-        return self.title or self.xml_url
+        return self.title or self.url
 
     def save(self, *args, **kwargs):
-        """Poll new Feed """
+        # Poll new Feed
         try:
-            Feed.objects.get(xml_url=self.xml_url)
+            Feed.objects.get(url=self.url)
             super(Feed, self).save(*args, **kwargs)
         except Feed.DoesNotExist:
             super(Feed, self).save(*args, **kwargs)
@@ -30,15 +36,15 @@ class Feed(models.Model):
 
 class Entry(models.Model):
     feed = models.ForeignKey(Feed)
-    title = models.CharField(max_length=2000, blank=True, null=True)
-    link = models.CharField(max_length=2000)
+    title = models.CharField(max_length=255, blank=True, null=True)
+    link = models.CharField(max_length=255, db_index=True)
     description = models.TextField(blank=True, null=True)
-    image = models.ImageField(max_length=2000, null=True)
-    published_time = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(max_length=255, null=True)
+    published = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['-published_time']
-        verbose_name_plural = 'entries'
+        ordering = ["-published"]
+        verbose_name_plural = _("entries")
 
     def __unicode__(self):
         return self.title

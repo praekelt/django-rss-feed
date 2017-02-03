@@ -4,6 +4,7 @@ from django.test.client import Client
 
 
 class AdminTestCase(TestCase):
+
     def setUp(self):
         self.client = Client()
         self.editor = get_user_model().objects.create(

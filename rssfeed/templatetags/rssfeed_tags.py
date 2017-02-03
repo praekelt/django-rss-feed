@@ -5,10 +5,7 @@ from rssfeed.models import Entry
 register = template.Library()
 
 
-@register.inclusion_tag(
-    "rssfeed/inclusion_tags/entry_list.html", takes_context=True
-)
-def render_rssfeed(context, count=10):
+@register.inclusion_tag("rssfeed/inclusion_tags/render_rssfeed.html")
+def render_rssfeed(count=10):
     entries = Entry.objects.all()
-    context["entry_list"] = entries[:count]
-    return context
+    return {"entries": entries[:count]}

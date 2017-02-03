@@ -24,7 +24,7 @@ class RssFeedTagTest(TestCase):
     def setUp(self):
         # Create a test feed object
         self.feed = Feed.objects.create(
-            xml_url="http://localhost:%s/test/feed" % PORT
+            url="http://localhost:%s/test/feed" % PORT
         )
         self.feed.title = "Test Feed"
         self.feed.save()

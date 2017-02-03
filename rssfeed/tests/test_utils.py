@@ -29,23 +29,23 @@ class PollFeedTest(TestCase):
 
         # Create a Feed mock object
         feed_mock = Mock(spec=Feed)
-        feed_mock.xml_url = "test-feed-url"
-        feed_mock.published_time = None
+        feed_mock.url = "test-feed-url"
+        feed_mock.published = None
         feed_mock.image = \
             "http://news.bbcimg.co.uk/nol/shared/img/bbc_news_120x60.gif"
         feed_mock.description = "BBC News - Home"
         self.feed_mock = feed_mock
 
-    def test_published_time(self):
+    def test_published(self):
         # Test Published Time variations
         with patch("rssfeed.utils.feedparser.parse", self.parser_mock):
             # No published time in DB
             feed_mock = self.feed_mock
-            feed_mock.published_time = None
+            feed_mock.published = None
             poll_feed(feed_mock, verbose=True)
 
         # Published time in DB later than on feed
-        feed_mock.published_time = pytz.utc.localize(
+        feed_mock.published = pytz.utc.localize(
             datetime(2017, 1, 1, 13, 0, 0)
         )
         poll_feed(feed_mock, verbose=True)
@@ -84,8 +84,8 @@ class PollFeedBozoExceptionTest(TestCase):
 
     def setUp(self):
         feed_mock = Mock(spec=Feed)
-        feed_mock.xml_url = "test-feed-url"
-        feed_mock.published_time = None
+        feed_mock.url = "test-feed-url"
+        feed_mock.published = None
         self.feed_mock = feed_mock
 
     def test_bozo_exception(self, parse_mock):
@@ -107,8 +107,8 @@ class PollEntriesTest(TestCase):
 
         # Create Feed mock object
         feed_mock = Mock(spec=Feed)
-        feed_mock.xml_url = "test-feed-url"
-        feed_mock.published_time = None
+        feed_mock.url = "test-feed-url"
+        feed_mock.published = None
         feed_mock.image = \
             "http://news.bbcimg.co.uk/nol/shared/img/bbc_news_120x60.gif"
         feed_mock.description = "BBC News - Home"
@@ -161,7 +161,7 @@ class PollEntriesTest(TestCase):
             with patch("rssfeed.utils.Entry", db_entry_mock):
                 poll_feed(self.feed_mock, verbose=True)
 
-    def test_feed_entry_future_published_time(self):
+    def test_feed_entry_future_published(self):
         # Test with future entry published time
         parse_mock = self.parser_mock
         entry_attrs = {
