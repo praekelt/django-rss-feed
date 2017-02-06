@@ -328,7 +328,10 @@ class PollEntriesTest(TestCase):
                            "59_ipdp87vv.jpg"
                 }
             ],
-            "links": ""
+            "links": "",
+            "summary": ["<img http://c.files.bbci.co.uk/17567/production/_9381"
+                        "9559_ipdp87vv.jpg/>"]
+
         }
 
         entry_mock = Mock(**entry_attrs)
@@ -356,7 +359,9 @@ class PollEntriesTest(TestCase):
                     "href": "http://c.files.bbci.co.uk/17567/production/_93819"
                             "559_ipdp87vv.jpg"
                 }
-            ]
+            ],
+            "summary": ["<img http://c.files.bbci.co.uk/17567/production/_9381"
+                        "9559_ipdp87vv.jpg/>"]
         }
 
         entry_mock = Mock(**entry_attrs)

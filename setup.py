@@ -34,6 +34,7 @@ setup(
         "tox",
         "mock",
         "pytz",
+        "BeautifulSoup",
     ],
     classifiers=[
         "Programming Language :: Python",

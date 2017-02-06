@@ -5,7 +5,7 @@ from rssfeed.models import Feed, Entry
 
 class FeedAdmin(admin.ModelAdmin):
     list_display = ["url", "title", "published", "last_polled",
-                    "image", ]
+                    "image", "description", ]
     search_fields = ["link", "title"]
     readonly_fields = ["title", "link", "description", "published",
                        "last_polled", "image", ]
@@ -25,7 +25,7 @@ admin.site.register(Feed, FeedAdmin)
 
 
 class EntryAdmin(admin.ModelAdmin):
-    list_display = ["title", "feed", "published", "image", ]
+    list_display = ["title", "feed", "published", "image", "description", ]
     list_filter = ["feed"]
     search_fields = ["title", "link"]
     readonly_fields = ["link", "title", "description", "published",

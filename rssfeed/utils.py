@@ -2,13 +2,16 @@ from datetime import datetime
 from time import mktime
 
 import feedparser
+import BeautifulSoup
+from celery.schedules import crontab
 from django.utils import timezone
-
+from celery.task import periodic_task
 from rssfeed.models import Entry
 
 MAX = 20
 
 
+@periodic_task(run_every=crontab(hour=1, minute=0), ignore_result=True)
 def poll_feed(db_feed, verbose=False):
     """
     Read through a feed looking for new entries.
@@ -100,13 +103,38 @@ def poll_feed(db_feed, verbose=False):
                 db_entry.image = entry.media_context[0]["url"]
             elif hasattr(entry, "media_content"):
                 db_entry.image = entry.media_content[0]["url"]
-            elif hasattr(entry, "links"):
-                if entry.links[0]["href"]:
-                    db_entry.image = entry.links[0]["href"]
+            elif hasattr(entry, "summary") and not verbose:
+                if has_summary_image(entry):
+                    db_entry.image = find_article_image(entry.summary)
+                else:
+                    db_entry.image = ""
+            if hasattr(entry, "description"):
+                desc = BeautifulSoup.BeautifulSoup(entry.description).text
+                db_entry.description = desc
             else:
-                db_entry.image = ""
-
-            if hasattr(entry, "description_detail"):
-                db_entry.description = entry.description
+                db_entry = ""
 
             db_entry.save()
+
+
+def has_summary_image(entry):
+    if entry.summary and (
+                    entry.summary.find(".jpg") or
+                    entry.summary.find(".gif") or
+                entry.summary.find(".png")
+    ):
+        return True
+    else:
+        return False
+
+
+def find_article_image(summary):
+    if summary.find("jpg"):
+        image = summary[summary.find("http"):summary.find("jpg") + 3]
+    elif summary.find("png"):
+        image = summary[summary.find("http"):summary.find("png") + 3]
+    elif summary.find("gif"):
+        image = summary[summary.find("http"):summary.find("gif") + 3]
+    else:
+        image = ""
+    return image
