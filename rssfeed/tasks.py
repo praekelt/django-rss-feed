@@ -6,13 +6,19 @@ import BeautifulSoup
 from celery.schedules import crontab
 from django.utils import timezone
 from celery.task import periodic_task
-from rssfeed.models import Entry
+from rssfeed.models import Entry, Feed
 
 MAX = 20
 
 
-@periodic_task(run_every=crontab(hour=1, minute=0), ignore_result=True)
-def poll_feed(db_feed, verbose=False):
+@periodic_task(
+    run_every=crontab(
+        hour='*',
+        minute='*/15',
+        day_of_week='*'),
+    ignore_result=True
+)
+def poll_feed(pk_feed, verbose=False):
     """
     Read through a feed looking for new entries.
 
@@ -20,7 +26,7 @@ def poll_feed(db_feed, verbose=False):
     verbose: True for debugging purposes
 
     """
-
+    db_feed = Feed.objects.get(pk=pk_feed)
     parsed = feedparser.parse(db_feed.url)
 
     if hasattr(parsed.feed, "bozo_exception"):

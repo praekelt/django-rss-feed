@@ -28,7 +28,8 @@ setup(
     install_requires=[
         "django",
         "feedparser",
-        "django-photologue"
+        "django-photologue",
+        "django-celery",
     ],
     tests_require=[
         "tox",

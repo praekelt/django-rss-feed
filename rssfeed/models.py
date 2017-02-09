@@ -30,8 +30,8 @@ class Feed(models.Model):
             super(Feed, self).save(*args, **kwargs)
         except Feed.DoesNotExist:
             super(Feed, self).save(*args, **kwargs)
-            from rssfeed.utils import poll_feed
-            poll_feed(self)
+            from rssfeed.tasks import poll_feed
+            poll_feed.delay(self.pk)
 
 
 class Entry(models.Model):

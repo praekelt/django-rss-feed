@@ -5,7 +5,7 @@ from django.test import TestCase
 from mock import Mock, patch
 
 from rssfeed.models import Feed
-from rssfeed.utils import poll_feed
+from rssfeed.tasks import poll_feed
 
 
 class PollFeedTest(TestCase):
@@ -71,11 +71,11 @@ class PollFeedTest(TestCase):
         parser_mock.return_value.feed.description_detail = "text/plain"
         parser_mock.return_value.feed.description = "BBC News - Home"
         del parser_mock.return_value.feed.image
-        with patch("rssfeed.utils.feedparser.parse", parser_mock):
+        with patch("rssfeed.tsks.feedparser.parse", parser_mock):
             poll_feed(self.feed_mock, verbose=True)
 
 
-@patch("rssfeed.utils.feedparser.parse")
+@patch("rssfeed.tasks.feedparser.parse")
 class PollFeedBozoExceptionTest(TestCase):
     """
     Test polling feeds where Bozo Exception returned.
@@ -133,8 +133,8 @@ class PollEntriesTest(TestCase):
         parser_mock.return_value.entries = [entry_mock]
         db_entry_mock = Mock()
         db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
-        with patch("rssfeed.utils.feedparser.parse", parser_mock):
-            with patch("rssfeed.utils.Entry", db_entry_mock):
+        with patch("rssfeed.tasks.feedparser.parse", parser_mock):
+            with patch("rssfeed.tasks.Entry", db_entry_mock):
                 poll_feed(self.feed_mock, verbose=True)
 
     def test_feed_entry_missing_description(self):
@@ -157,8 +157,8 @@ class PollEntriesTest(TestCase):
         parser_mock.return_value.entries = [entry_mock]
         db_entry_mock = Mock()
         db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
-        with patch("rssfeed.utils.feedparser.parse", parser_mock):
-            with patch("rssfeed.utils.Entry", db_entry_mock):
+        with patch("rssfeed.tasks.feedparser.parse", parser_mock):
+            with patch("rssfeed.tasks.Entry", db_entry_mock):
                 poll_feed(self.feed_mock, verbose=True)
 
     def test_feed_entry_future_published(self):
@@ -181,8 +181,8 @@ class PollEntriesTest(TestCase):
         parse_mock.return_value.entries = [entry_mock]
         db_entry_mock = Mock()
         db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
-        with patch("rssfeed.utils.feedparser.parse", parse_mock):
-            with patch("rssfeed.utils.Entry", db_entry_mock):
+        with patch("rssfeed.tasks.feedparser.parse", parse_mock):
+            with patch("rssfeed.tasks.Entry", db_entry_mock):
                 poll_feed(self.feed_mock, verbose=True)
 
     def test_feed_entry_media_content(self):
@@ -217,8 +217,8 @@ class PollEntriesTest(TestCase):
         parse_mock.return_value.entries = [entry_mock]
         db_entry_mock = Mock()
         db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
-        with patch("rssfeed.utils.feedparser.parse", parse_mock):
-            with patch("rssfeed.utils.Entry", db_entry_mock):
+        with patch("rssfeed.tasks.feedparser.parse", parse_mock):
+            with patch("rssfeed.tasks.Entry", db_entry_mock):
                 poll_feed(self.feed_mock, verbose=True)
 
     def test_feed_entry_empty_media(self):
@@ -259,8 +259,8 @@ class PollEntriesTest(TestCase):
         parse_mock.return_value.entries = [entry_mock]
         db_entry_mock = Mock()
         db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
-        with patch("rssfeed.utils.feedparser.parse", parse_mock):
-            with patch("rssfeed.utils.Entry", db_entry_mock):
+        with patch("rssfeed.tasks.feedparser.parse", parse_mock):
+            with patch("rssfeed.tasks.Entry", db_entry_mock):
                 poll_feed(self.feed_mock, verbose=True)
 
     def test_feed_entry_media_context(self):
@@ -298,8 +298,8 @@ class PollEntriesTest(TestCase):
         parse_mock.return_value.entries = [entry_mock]
         db_entry_mock = Mock()
         db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
-        with patch("rssfeed.utils.feedparser.parse", parse_mock):
-            with patch("rssfeed.utils.Entry", db_entry_mock):
+        with patch("rssfeed.tasks.feedparser.parse", parse_mock):
+            with patch("rssfeed.tasks.Entry", db_entry_mock):
                 poll_feed(self.feed_mock, verbose=True)
 
     def test_feed_entry_published_parsed_missing(self):
@@ -342,8 +342,8 @@ class PollEntriesTest(TestCase):
         parse_mock.return_value.entries = [entry_mock]
         db_entry_mock = Mock()
         db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
-        with patch("rssfeed.utils.feedparser.parse", parse_mock):
-            with patch("rssfeed.utils.Entry", db_entry_mock):
+        with patch("rssfeed.tasks.feedparser.parse", parse_mock):
+            with patch("rssfeed.tasks.Entry", db_entry_mock):
                 poll_feed(self.feed_mock, verbose=True)
 
     def test_feed_entry_links(self):
@@ -373,6 +373,6 @@ class PollEntriesTest(TestCase):
         parse_mock.return_value.entries = [entry_mock]
         db_entry_mock = Mock()
         db_entry_mock.objects.get_or_create.return_value = (Mock(), True)
-        with patch("rssfeed.utils.feedparser.parse", parse_mock):
-            with patch("rssfeed.utils.Entry", db_entry_mock):
+        with patch("rssfeed.tasks.feedparser.parse", parse_mock):
+            with patch("rssfeed.tasks.Entry", db_entry_mock):
                 poll_feed(self.feed_mock, verbose=True)
