@@ -38,7 +38,7 @@ class PollFeedTest(TestCase):
 
     def test_published(self):
         # Test Published Time variations
-        with patch("rssfeed.utils.feedparser.parse", self.parser_mock):
+        with patch("rssfeed.tasks.feedparser.parse", self.parser_mock):
             # No published time in DB
             feed_mock = self.feed_mock
             feed_mock.published = None
@@ -54,7 +54,7 @@ class PollFeedTest(TestCase):
         # Test with missing attribute: description_detail
         parser_mock = self.parser_mock
         del parser_mock.return_value.feed.description_detail
-        with patch("rssfeed.utils.feedparser.parse", parser_mock):
+        with patch("rssfeed.tasks.feedparser.parse", parser_mock):
             poll_feed(self.feed_mock, verbose=True)
 
     def test_with_feed_description(self):
@@ -62,7 +62,7 @@ class PollFeedTest(TestCase):
         parser_mock = self.parser_mock
         parser_mock.return_value.feed.description_detail = "text/plain"
         parser_mock.return_value.feed.description = "BBC News - Home"
-        with patch("rssfeed.utils.feedparser.parse", parser_mock):
+        with patch("rssfeed.tasks.feedparser.parse", parser_mock):
             poll_feed(self.feed_mock, verbose=True)
 
     def test_missing_image_attribute(self):
