@@ -2,7 +2,4 @@ include LICENSE
 include README.rst
 include AUTHORS.rst
 include CHANGELOG.rst
-recursive-include rssfeed/migrations *
-recursive-include rssfeed/templates *
-recursive-include rssfeed/templatetags *
-recursive-include rssfeed/tests *
+recursive-include rssfeed/*

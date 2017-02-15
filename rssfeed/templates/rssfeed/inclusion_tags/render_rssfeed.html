@@ -11,7 +11,7 @@
                 <img src="{{ entry.feed.image }}"/>
                 <a href="{{ entry.feed.link }}" title="{{ entry.feed.description|safe }}">
                     {{ entry.feed.title|safe }}</a>
-                {% trans "on" %} {{ entry.published_time|date:"d M Y" }} ({{ entry.published_time|timesince }} ago)
+                {% trans "on" %} {{ entry.published|date:"d M Y" }} ({{ entry.published|timesince }} ago)
             </p>
             <p>{{ entry.description|safe }}</p>
         </div>

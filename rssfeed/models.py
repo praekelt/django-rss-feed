@@ -3,8 +3,8 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class Feed(models.Model):
-    title = models.CharField(max_length=255, blank=True, null=True)
-    url = models.CharField(max_length=255, unique=True)
+    title = models.CharField(max_length=2000, blank=True, null=True)
+    url = models.CharField(max_length=2000, unique=True)
     description = models.TextField(blank=True, null=True)
     link = models.CharField(
         max_length=255,
@@ -14,7 +14,7 @@ class Feed(models.Model):
     )
     published = models.DateTimeField(blank=True, null=True)
     last_polled = models.DateTimeField(blank=True, null=True)
-    image = models.ImageField(max_length=255, null=True)
+    image = models.ImageField(max_length=2000, null=True)
 
     class Meta:
         verbose_name = _("Feed")
@@ -36,11 +36,11 @@ class Feed(models.Model):
 
 class Entry(models.Model):
     feed = models.ForeignKey(Feed)
-    title = models.CharField(max_length=255, blank=True, null=True)
-    link = models.CharField(max_length=255, db_index=True)
+    title = models.CharField(max_length=2000, blank=True, null=True)
+    link = models.CharField(max_length=2000, db_index=True)
     description = models.TextField(blank=True, null=True)
-    image = models.ImageField(max_length=255, null=True)
-    published = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(max_length=2000, null=True)
+    published = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
         ordering = ["-published"]

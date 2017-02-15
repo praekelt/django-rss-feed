@@ -9,6 +9,7 @@ from celery.task import periodic_task
 from rssfeed.models import Entry, Feed
 
 MAX = 20
+MAX_LENGTH = 2000
 
 
 @periodic_task(
@@ -52,7 +53,10 @@ def poll_feed(pk_feed, verbose=False):
             return
 
     # Get the title of the RSS feed
-    db_feed.title = parsed.feed.title
+    if len(parsed.feed.title) > MAX_LENGTH:
+        db_feed.title = parsed.feed.title[0:MAX_LENGTH - 1]
+    else:
+        db_feed.title = parsed.feed.title
 
     if hasattr(parsed.feed, "description_detail") and hasattr(parsed.feed,
                                                               "description"):
@@ -62,7 +66,10 @@ def poll_feed(pk_feed, verbose=False):
     db_feed.last_polled = timezone.now()
 
     if hasattr(parsed.feed, "image"):
-        db_feed.image = parsed.feed.image.href
+        if len(parsed.feed.image.href) > MAX_LENGTH:
+            db_feed.image = parsed.feed.image.href[0:MAX_LENGTH - 1]
+        else:
+            db_feed.image = parsed.feed.image.href
     else:
         db_feed.image = ""
     db_feed.save()
@@ -100,15 +107,30 @@ def poll_feed(pk_feed, verbose=False):
                 )
                 db_entry.published = published
             if hasattr(entry, "title"):
-                db_entry.title = entry.title
+                if len(entry.title) > MAX_LENGTH:
+                    db_entry.title = entry.title[0:MAX_LENGTH - 1]
+                else:
+                    db_entry.title = entry.title
             # Mock does not support indexing. Verbose is set to True in test
             # Different APIs have differently named keys for the media content
             if hasattr(entry, "media_thumbnail"):
-                db_entry.image = entry.media_thumbnail[0]["url"]
+                if len(entry.media_thumbnail[0]["url"]) > MAX_LENGTH:
+                    db_entry.image = \
+                        entry.media_thumbnail[0]["url"][0:MAX_LENGTH - 1]
+                else:
+                    db_entry.image = entry.media_thumbnail[0]["url"]
             elif hasattr(entry, "media_context"):
-                db_entry.image = entry.media_context[0]["url"]
+                if len(entry.media_context[0]["url"]) > MAX_LENGTH:
+                    db_entry.image = \
+                        entry.media_context[0]["url"][0:MAX_LENGTH - 1]
+                else:
+                    db_entry.image = entry.media_context[0]["url"]
             elif hasattr(entry, "media_content"):
-                db_entry.image = entry.media_content[0]["url"]
+                if len(entry.media_content[0]["url"]) > MAX_LENGTH:
+                    db_entry.image = \
+                        entry.media_content[0]["url"][0:MAX_LENGTH - 1]
+                else:
+                    db_entry.image = entry.media_content[0]["url"]
             elif hasattr(entry, "summary") and not verbose:
                 if has_summary_image(entry):
                     db_entry.image = find_article_image(entry.summary)
@@ -127,7 +149,7 @@ def has_summary_image(entry):
     if entry.summary and (
                     entry.summary.find(".jpg") or
                     entry.summary.find(".gif") or
-                entry.summary.find(".png")
+                    entry.summary.find(".png")
     ):
         return True
     else:
@@ -143,4 +165,7 @@ def find_article_image(summary):
         image = summary[summary.find("http"):summary.find("gif") + 3]
     else:
         image = ""
-    return image
+    if len(image) > 2000:
+        return image[0:MAX_LENGTH - 1]
+    else:
+        return image
