@@ -29,7 +29,6 @@ setup(
         "django",
         "feedparser",
         "django-photologue",
-        "django-celery",
     ],
     tests_require=[
         "tox",
