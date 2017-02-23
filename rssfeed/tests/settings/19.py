@@ -22,6 +22,7 @@ DATABASES = {
 ROOT_URLCONF = "rssfeed.tests.urls"
 
 INSTALLED_APPS = [
+    "celery",
     "rssfeed",
     "rssfeed.tests",
     "django.contrib.admin",
@@ -63,3 +64,7 @@ SITE_ID = 1
 STATIC_URL = "/static/"
 SECRET_KEY = "SECRET_KEY"
 EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
+
+# Disable celery
+TASK_ALWAYS_EAGER = True
+BROKER_BACKEND = "memory"

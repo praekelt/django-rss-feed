@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from django.template import Context
 from django.template import Template
+from mock import patch
 
 from rssfeed.models import Entry, Feed
 from rssfeed.tests.simple_test_server import server_setup, server_teardown, \
@@ -22,6 +23,8 @@ class RssFeedTagTest(TestCase):
     TEMPLATE = Template("{% load rssfeed_tags %} {% render_rssfeed %}")
 
     def setUp(self):
+        self.patcher = patch("rssfeed.tasks.poll_feed.delay")
+        self.mock_delay = self.patcher.start()
         # Create a test feed object
         self.feed = Feed.objects.create(
             url="http://localhost:%s/test/feed" % PORT
@@ -39,3 +42,6 @@ class RssFeedTagTest(TestCase):
     def test_entry_shows_up(self):
         rendered = self.TEMPLATE.render(Context({}))
         self.assertIn(self.entry.title, rendered)
+
+    def tearDown(self):
+        self.patcher.stop()

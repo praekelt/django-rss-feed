@@ -1,4 +1,6 @@
 from django.test import TestCase
+from django.test import override_settings
+from mock import patch
 
 from rssfeed.models import Entry, Feed
 from rssfeed.tests.simple_test_server import (
@@ -16,8 +18,9 @@ def tearDownModule():
 
 class FeedTest(TestCase):
     # Create and access Feed.
-
     def setUp(self):
+        self.patcher = patch("rssfeed.tasks.poll_feed.delay")
+        self.mock_delay = self.patcher.start()
         self.feed = Feed.objects.create(
             url="http://localhost:%s/test/feed" % PORT
         )
@@ -34,11 +37,16 @@ class FeedTest(TestCase):
             % feed_unicode
         )
 
+    def tearDown(self):
+        self.patcher.stop()
+
 
 class EntryTest(TestCase):
     # Create and access Entry.
 
     def setUp(self):
+        self.patcher = patch("rssfeed.tasks.poll_feed.delay")
+        self.mock_delay = self.patcher.start()
         self.feed = Feed.objects.create(
             url="http://localhost:%s/test/feed" % PORT
         )
@@ -57,3 +65,6 @@ class EntryTest(TestCase):
             'Entry: Unexpected __unicode__ value: Got %s expected "Test Entry"'
             % entry_unicode
         )
+
+    def tearDown(self):
+        self.patcher.stop()

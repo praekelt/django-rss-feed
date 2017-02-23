@@ -11,12 +11,13 @@ class FeedAdmin(admin.ModelAdmin):
                        "last_polled", "image", ]
     fieldsets = (
         (None, {
-            "fields": (("url",),
-                       ("title", "link",),
-                       ("description",),
-                       ("published", "last_polled",),
-                       ("image",),
-                       )
+            "fields": (
+                ("url",),
+                ("title", "link",),
+                ("description",),
+                ("published", "last_polled",),
+                ("image",),
+            )
         }),
     )
 
@@ -32,12 +33,13 @@ class EntryAdmin(admin.ModelAdmin):
                        "feed", "image", ]
     fieldsets = (
         (None, {
-            "fields": (("link",),
-                       ("title", "feed",),
-                       ("description",),
-                       ("published",),
-                       ("image",),
-                       )
+            "fields": (
+                ("link",),
+                ("title", "feed",),
+                ("description",),
+                ("published",),
+                ("image",),
+            )
         }),
     )
 
