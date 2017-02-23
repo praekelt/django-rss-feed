@@ -97,7 +97,7 @@ def get_feed_attrs(parsed, db_feed):
 
     if hasattr(parsed.feed, "image"):
         if len(parsed.feed.image.href) > MAX_LENGTH:
-            db_feed.image = parsed.feed.image.href[0:MAX_LENGTH - 1]
+            db_feed.image = ""
         else:
             db_feed.image = parsed.feed.image.href
     else:
@@ -122,20 +122,17 @@ def get_entry_attrs(entry, db_entry, verbose):
     # Different APIs have differently named keys for the media content
     if hasattr(entry, "media_thumbnail"):
         if len(entry.media_thumbnail[0]["url"]) > MAX_LENGTH:
-            db_entry.image = \
-                entry.media_thumbnail[0]["url"][0:MAX_LENGTH - 1]
+            db_entry.image = ""
         else:
             db_entry.image = entry.media_thumbnail[0]["url"]
     elif hasattr(entry, "media_context"):
         if len(entry.media_context[0]["url"]) > MAX_LENGTH:
-            db_entry.image = \
-                entry.media_context[0]["url"][0:MAX_LENGTH - 1]
+            db_entry.image = ""
         else:
             db_entry.image = entry.media_context[0]["url"]
     elif hasattr(entry, "media_content"):
         if len(entry.media_content[0]["url"]) > MAX_LENGTH:
-            db_entry.image = \
-                entry.media_content[0]["url"][0:MAX_LENGTH - 1]
+            db_entry.image = ""
         else:
             db_entry.image = entry.media_content[0]["url"]
     elif hasattr(entry, "summary") and not verbose:
@@ -193,6 +190,6 @@ def find_article_image(summary):
     else:
         image = ""
     if len(image) > 2000:
-        return image[0:MAX_LENGTH - 1]
+        return ""
     else:
         return image
