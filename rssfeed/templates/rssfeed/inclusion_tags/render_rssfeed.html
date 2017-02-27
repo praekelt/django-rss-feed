@@ -1,0 +1,27 @@
+{% load i18n %}
+
+{% if entries %}
+    {% for entry in entries %}
+        <div class="feed_entry">
+            <img src="{{ entry.image }}"/>
+
+            <h3><a href="{{ entry.link }}">{{ entry.title|safe }}</a></h3>
+            <p class="rssfeed_subtitle">
+                {% trans "from" %}
+                <img src="{{ entry.feed.image }}"/>
+                <a href="{{ entry.feed.link }}" title="{{ entry.feed.description|safe }}">
+                    {{ entry.feed.title|safe }}</a>
+                {% trans "on" %} {{ entry.published|date:"d M Y" }} ({{ entry.published|timesince }} ago)
+            </p>
+            <p>{{ entry.description|safe }}</p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p id="no_entries">
+        {% if show_read_flag %}
+            {% trans "No stories found" %}
+        {% else %}
+            {% trans "No unread stories found" %}
+        {% endif %}
+    </p>
+{% endif %}

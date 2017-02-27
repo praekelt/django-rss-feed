@@ -1,0 +1,15 @@
+language: python
+
+env:
+  - TOXENV=django19
+  - TOXENV=django110
+
+install:
+  - pip install tox
+  - pip install coveralls
+
+script:
+  - tox
+
+after_success:
+  - coveralls
